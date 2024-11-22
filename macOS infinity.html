@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>macOS Infinity</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f0f0f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-bar {
+      background: #333;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px;
+      align-items: center;
+    }
+
+    .menu-bar .left, .menu-bar .right {
+      display: flex;
+    }
+
+    .menu-bar a {
+      color: white;
+      text-decoration: none;
+      margin-right: 20px;
+    }
+
+    .desktop {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: url('https://example.com/your-background-image.jpg') no-repeat center center;
+      background-size: cover;
+    }
+
+    .dock {
+      background-color: #333;
+      height: 70px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dock-item {
+      color: white;
+      margin: 0 20px;
+      cursor: pointer;
+      font-size: 30px;
+      transition: transform 0.2s ease;
+      text-align: center;
+    }
+
+    .dock-item:hover {
+      transform: scale(1.2);
+    }
+
+    .window {
+      width: 300px;
+      height: 400px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 100;
+      resize: both;
+      min-width: 200px;
+      min-height: 200px;
+      transition: all 0.3s ease;
+    }
+
+    .window-header {
+      background: #333;
+      color: white;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .window-header span {
+      font-size: 16px;
+    }
+
+    .window-body {
+      flex-grow: 1;
+      padding: 20px;
+      background: #f5f5f5;
+      overflow: hidden;
+    }
+
+    .window .close-btn, .window .minimize-btn, .window .maximize-btn {
+      font-size: 18px;
+      font-weight: bold;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .window .close-btn:hover {
+      color: red;
+    }
+
+    .window .minimize-btn:hover {
+      color: yellow;
+    }
+
+    .window .maximize-btn:hover {
+      color: green;
+    }
+
+    .resize-handle {
+      width: 20px;
+      height: 20px;
+      background: #333;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      cursor: se-resize;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .window.maximized {
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      transform: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .camera-video {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+    }
+
+    .camera-controls {
+      text-align: center;
+      padding-top: 10px;
+    }
+
+    .camera-button {
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .camera-button:hover {
+      background-color: #555;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Menu Bar -->
+  <div class="menu-bar">
+    <div class="left">
+      <a href="#">🍎</a>
+      <a href="#">File</a>
+      <a href="#">Edit</a>
+    </div>
+    <div class="right">
+      <a href="#">Finder</a>
+      <a href="#">Battery</a>
+      <a href="#">Time</a>
+    </div>
+  </div>
+
+  <!-- Desktop Area -->
+  <div class="desktop">
+    <h1>Welcome to macOS Infinity</h1>
+    <p>Click the icons in the Dock to open apps.</p>
+
+    <!-- Safari Window -->
+    <div class="window" id="safariWindow">
+      <div class="window-header" id="safariWindowHeader">
+        <span>Safari</span>
+        <div>
+          <span class="minimize-btn" onclick="minimizeWindow('safariWindow')">_</span>
+          <span class="maximize-btn" onclick="maximizeWindow('safariWindow')">☐</span>
+          <span class="close-btn" onclick="closeWindow('safariWindow')">×</span>
+        </div>
+      </div>
+      <div class="window-body">
+        <iframe src="https://www.google.com" id="safariIframe"></iframe>
+      </div>
+      <div class="resize-handle"></div>
+    </div>
+
+    <!-- Camera Window -->
+    <div class="window" id="cameraWindow">
+      <div class="window-header" id="cameraWindowHeader">
+        <span>Camera</span>
+        <div>
+          <span class="minimize-btn" onclick="minimizeWindow('cameraWindow')">_</span>
+          <span class="maximize-btn" onclick="maximizeWindow('cameraWindow')">☐</span>
+          <span class="close-btn" onclick="closeWindow('cameraWindow')">×</span>
+        </div>
+      </div>
+      <div class="window-body">
+        <video id="cameraVideo" class="camera-video" autoplay></video>
+        <div class="camera-controls">
+          <button class="camera-button" onclick="takeSnapshot()">Take Snapshot</button>
+        </div>
+      </div>
+      <div class="resize-handle"></div>
+    </div>
+
+    <!-- Finder Window -->
+    <div class="window" id="finderWindow">
+      <div class="window-header" id="finderWindowHeader">
+        <span>Finder</span>
+        <div>
+          <span class="minimize-btn" onclick="minimizeWindow('finderWindow')">_</span>
+          <span class="maximize-btn" onclick="maximizeWindow('finderWindow')">☐</span>
+          <span class="close-btn" onclick="closeWindow('finderWindow')">×</span>
+        </div>
+      </div>
+      <div class="window-body">
+        <input type="file" id="fileInput" class="file-input" multiple webkitdirectory>
+        <div id="fileList"></div>
+      </div>
+      <div class="resize-handle"></div>
+    </div>
+
+  </div>
+
+  <!-- Dock -->
+  <div class="dock">
+    <div class="dock-item" onclick="openWindow('finderWindow')">
+      <span style="font-size: 30px;">📁</span>
+      <span>Finder</span>
+    </div>
+    <div class="dock-item" onclick="openWindow('safariWindow')">
+      <span style="font-size: 30px;">🌍</span>
+      <span>Safari</span>
+    </div>
+    <div class="dock-item" onclick="openWindow('cameraWindow')">
+      <span style="font-size: 30px;">📸</span>
+      <span>Camera</span>
+    </div>
+  </div>
+
+  <script>
+    let currentWindow = null;
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    // Draggable Window Functions
+    function dragStart(event, windowId) {
+      isDragging = true;
+      currentWindow = document.getElementById(windowId);
+      offsetX = event.clientX - currentWindow.offsetLeft;
+      offsetY = event.clientY - currentWindow.offsetTop;
+      document.addEventListener('mousemove', dragMove);
+      document.addEventListener('mouseup', dragEnd);
+    }
+
+    function dragMove(event) {
+      if (isDragging && currentWindow) {
+        const x = event.clientX - offsetX;
+        const y = event.clientY - offsetY;
+        currentWindow.style.left = `${x}px`;
+        currentWindow.style.top = `${y}px`;
+      }
+    }
+
+    function dragEnd() {
+      isDragging = false;
+      document.removeEventListener('mousemove', dragMove);
+      document.removeEventListener('mouseup', dragEnd);
+    }
+
+    // Window Actions
+    function openWindow(windowId) {
+      const windowElement = document.getElementById(windowId);
+      windowElement.style.display = 'flex';
+    }
+
+    function closeWindow(windowId) {
+      const windowElement = document.getElementById(windowId);
+      windowElement.style.display = 'none';
+    }
+
+    function minimizeWindow(windowId) {
+      const windowElement = document.getElementById(windowId);
+      windowElement.style.display = 'none';
+    }
+
+    function maximizeWindow(windowId) {
+      const windowElement = document.getElementById(windowId);
+      if (windowElement.classList.contains('maximized')) {
+        windowElement.classList.remove('maximized');
+      } else {
+        windowElement.classList.add('maximized');
+      }
+    }
+
+    // Camera Access
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const videoElement = document.getElementById('cameraVideo');
+        videoElement.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Access to camera denied:", err);
+      });
+
+    // Take snapshot (optional feature)
+    function takeSnapshot() {
+      const videoElement = document.getElementById('cameraVideo');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      ctx.drawImage(videoElement, 0, 0);
+      const imgUrl = canvas.toDataURL('image/png');
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      document.body.appendChild(img);
+    }
+
+    // Enable draggable behavior for windows
+    document.querySelectorAll('.window-header').forEach(header => {
+      header.addEventListener('mousedown', (e) => {
+        const windowId = e.target.closest('.window').id;
+        dragStart(e, windowId);
+      });
+    });
+  </script>
+</body>
+</html>
